@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY_VIRUSTOTAL")
 DOMAIN = "orange.pl"
 # Zaczynamy od pierwszego linku
 current_url = f"https://www.virustotal.com/api/v3/domains/{DOMAIN}/subdomains?limit=40" # Zwiększamy limit dla mniejszej liczby zapytań
