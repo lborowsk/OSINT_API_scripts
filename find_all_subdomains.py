@@ -37,6 +37,9 @@ def securitytrails_subdomains(domain_cache: dict, domain: str):
     url = f"https://api.securitytrails.com/v1/domain/{domain}/subdomains"
     HEADERS = {"apikey" : API_KEY}
     print("Pobieranie subdomen z SecurityTrails...")
+    count = 0
+    dns_count = 0
+    already_found = 0
     try:
         response = requests.get(url, headers=HEADERS)
         api_data = response.json()
@@ -45,13 +48,20 @@ def securitytrails_subdomains(domain_cache: dict, domain: str):
         for subdomain in subdomains:
             hostname = f'{subdomain}.{domain}'
             if hostname in domain_cache:
+                already_found += 1
                 continue
             else:
                 try:
                     ip = socket.gethostbyname(hostname)
                     add_to_cache(domain_cache, hostname, [ip])
+                    dns_count += 1
                 except socket.gaierror:
-                    print(f"Nie znaleziono IP dla {hostname}")
+                    count += 1
+                    dns_count += 1
+            if dns_count % 100 == 0:
+                print(f"Rezolucja DNS: {dns_count}/{len(subdomains)} subdomen...")
+        
+        print(f"Nie znaleziono adresów dla {count} subdomen, {already_found} subdomen było znaleziono wcześniej")
         
     except requests.exceptions.HTTPError as e:
         print(f"Błąd HTTP: {e}")
@@ -122,7 +132,6 @@ def hackertarget_subdomains(domain_cache: dict, domain: str):
     try:
         response = requests.get(url)
         subdomain_list = response.text.splitlines()
-        print(subdomain_list)
         for line in subdomain_list:
             if line.strip():
                 parts = line.split(',')
