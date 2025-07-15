@@ -116,6 +116,24 @@ def virustotal_subdomains(domain_cache: dict, domain: str):
             print("Błąd: Nie udało się sparsować odpowiedzi JSON.")
             break
 
+def hackertarget_subdomains(domain_cache: dict, domain: str):
+    url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
+    print("Pobieranie subdomen z HackerTarget...")
+    try:
+        response = requests.get(url)
+        subdomain_list = response.text.splitlines()
+        print(subdomain_list)
+        for line in subdomain_list:
+            if line.strip():
+                parts = line.split(',')
+                ip_address = [parts[1]]
+                add_to_cache(domain_cache, parts[0], ip_address)
+    except requests.exceptions.HTTPError as e:
+        print(f"Błąd HTTP: {e}")
+        print(f"Treść odpowiedzi: {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Błąd połączenia: {e}")
+
 def add_to_cache(domain_cache: dict, subdomain: str, ips: list):
     if subdomain in domain_cache:
         for ip in ips:
@@ -129,12 +147,10 @@ def find_subdomains(domain: str, filename: str):
     dnsdumpster_subdomains(domain_cache, domain)
     virustotal_subdomains(domain_cache, domain)
     securitytrails_subdomains(domain_cache, domain)
+    hackertarget_subdomains(domain_cache, domain)
     print(f"Znaleziono łącznie {len(domain_cache)} domen")
     with open(filename, 'w') as f:
         for subdomain in domain_cache:
             f.write(f'{subdomain}; {domain_cache[subdomain]}\n')
 
     print(f"Wynik działania programu zapisany do pliku {filename}")
-
-
-    
