@@ -7,31 +7,25 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("API_KEY_VIRUSTOTAL")
 DOMAIN = "orange.pl"
-# Zaczynamy od pierwszego linku
-current_url = f"https://www.virustotal.com/api/v3/domains/{DOMAIN}/subdomains?limit=40" # Zwiększamy limit dla mniejszej liczby zapytań
+current_url = f"https://www.virustotal.com/api/v3/domains/{DOMAIN}/subdomains?limit=40"
 HEADERS = {"x-apikey": API_KEY}
 
-# Lista do przechowywania wszystkich znalezionych subdomen ze wszystkich stron
-all_results = []
+all_results = {}
 page_count = 1
 
-# Używamy obiektu sesji dla wydajniejszych zapytań
 session = requests.Session()
 session.headers.update(HEADERS)
 
 print(f"Rozpoczynam pobieranie subdomen dla: {DOMAIN}")
 
-# --- Pętla do obsługi paginacji ---
 while current_url:
     try:
         print(f"Pobieram stronę nr {page_count}...")
         response = session.get(current_url)
-        # Sprawdzenie, czy zapytanie się powiodło
         response.raise_for_status()
 
         api_data = response.json()
 
-        # Przetwarzanie subdomen z bieżącej strony
         subdomain_list = api_data.get('data', [])
         for item in subdomain_list:
             subdomain_name = item.get('id')
@@ -45,18 +39,12 @@ while current_url:
             ]
             
             if subdomain_name:
-                all_results.append({
-                    "subdomain": subdomain_name,
-                    "ips": ip_addresses
-                })
+                all_results[subdomain_name] = ip_addresses
 
-        # --- Kluczowy element: pobranie linku do następnej strony ---
-        # Bezpiecznie sprawdzamy, czy link 'next' istnieje
         current_url = api_data.get('links', {}).get('next')
         
         page_count += 1
 
-        # Dobra praktyka: krótka przerwa, aby nie przekroczyć limitu zapytań API
         if current_url:
             time.sleep(1) 
 
@@ -71,15 +59,11 @@ while current_url:
         print("Błąd: Nie udało się sparsować odpowiedzi JSON.")
         break
 
-# --- Wyświetlenie końcowych wyników ---
 print("\nZakończono pobieranie wszystkich subdomen.")
 print(f"Łącznie znaleziono {len(all_results)} subdomen na {page_count - 1} stronach.")
 
-# Zapisz do pliku lub wyświetl na ekranie
-# print(json.dumps(all_results, indent=2, ensure_ascii=False))
-
-# Opcjonalnie: Zapis wyników do pliku JSON
 with open('subdomains_output.json', 'w', encoding='utf-8') as f:
-    json.dump(all_results, f, indent=2, ensure_ascii=False)
+    for subdomain in all_results:
+        f.write(f"{subdomain} : {ip_addresses}")
 
-print("\nWyniki zostały zapisane do pliku 'subdomains_output.json'")
+print("\nWyniki zostały zapisane do pliku 'subdomains_output.txt'")
