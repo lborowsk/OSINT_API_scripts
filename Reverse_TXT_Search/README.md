@@ -23,6 +23,7 @@ You should download the archives of interest (e.g., from popular domain lists) a
 You can install the required library using `pip`:
 ```bash
 pip install duckdb
+```
 
 ## Usage
 
@@ -36,6 +37,7 @@ Let's assume your Parquet files are located in the `/data/dns/` directory. To fi
 
 ```bash
 python reverse_txt.py /data/dns/ verizon
+```
 
 ## How It Works 🤔
 
@@ -55,7 +57,9 @@ The script prints a list of found relationships to the standard output (your con
 At the end, a summary with the total number of found domains is displayed.
 
 ### Example Output
+```
 ('google-site-verification=ABC...xyz', 'related-domain-one.com')
 ('facebook-domain-verification=123...789', 'another-related-domain.org')
 ('adobe-idp-site-verification=...', 'company-site.co.uk')
 Found 3 related domains.
+```
