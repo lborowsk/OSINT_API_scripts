@@ -62,8 +62,10 @@ Run the script from your terminal:
 
 ```Bash
 python find_all_subdomains.py
-The script will begin collecting data from all configured sources and will save the results to a file named your_domain_subdomains.txt.
 ```
+
+The script will begin collecting data from all configured sources and will save the results to a file named your_domain_subdomains.txt.
+
 ### Using Individual Scripts
 Each of the scripts (dns_dumpster.py, securitytrails_subdomains.py, and virustotal.py) can also be run separately. They require a similar modification—you need to manually set the DOMAIN variable at the beginning of each file. They are mainly intended for testing individual data sources.
 
