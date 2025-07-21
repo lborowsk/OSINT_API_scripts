@@ -62,8 +62,8 @@ while current_url:
 print("\nZakończono pobieranie wszystkich subdomen.")
 print(f"Łącznie znaleziono {len(all_results)} subdomen na {page_count - 1} stronach.")
 
-with open('subdomains_output.json', 'w', encoding='utf-8') as f:
+with open('subdomains_output.txt', 'w', encoding='utf-8') as f:
     for subdomain in all_results:
-        f.write(f"{subdomain} : {ip_addresses}")
+        f.write(f"{subdomain}; {ip_addresses}\n")
 
 print("\nWyniki zostały zapisane do pliku 'subdomains_output.txt'")
