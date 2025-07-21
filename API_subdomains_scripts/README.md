@@ -47,7 +47,7 @@ The primary way to use this project is by running the find_all_subdomains.py scr
 
 Open the find_all_subdomains.py file in a code editor.
 
-Find the `if __name__ == __main__':` block at the end of the file.
+Find the `if __name__ == '__main__':` block at the end of the file.
 
 Change the value of the target_domain variable to the domain you want to scan.
 
